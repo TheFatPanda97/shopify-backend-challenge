@@ -1,11 +1,11 @@
-const express = require('express')
-const app = express()
-const port = 3000
+import express from 'express';
+const app = express();
+const port = 3000;
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-https://runkit.com/embed/save
+  res.send('Hello World!');
+});
+//runkit.com/embed/save
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+  console.log(`Example app listening at http://localhost:${port}`);
+});

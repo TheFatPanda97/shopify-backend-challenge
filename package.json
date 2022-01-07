@@ -4,11 +4,20 @@
   "description": "Backend challenge for the Shopify summer 2022 backend developer intern position",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec babel-node src/index.js",
+    "build": "babel src -d dist"
   },
   "author": "TheFatPanda97",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.7",
+    "@babel/core": "^7.16.7",
+    "@babel/node": "^7.16.7",
+    "@babel/preset-env": "^7.16.7",
+    "nodemon": "^2.0.15"
   }
 }
