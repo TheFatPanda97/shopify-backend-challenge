@@ -1,0 +1,22 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container h1 {
+  text-align: center;
+  margin: 0;
+}
+
+.btn-home {
+  width: 100px;
+  margin: 20px 0px;
+}
+
+.btn-home a {
+  text-decoration: none;
+  color: white;
+}
