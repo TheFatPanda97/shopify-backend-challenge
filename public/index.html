@@ -77,34 +77,24 @@
 
   <script>
     document.getElementById("action-navbar").style.display = "none";
-    const STATE_MAP = {
-      init: "INIT",
-      add: "ADD",
-      update: "UPDATE",
-      delete: "DELETE"
-    }
 
     let allItems = {};
     let selectedItems = {};
-    let state = STATE_MAP.init;
 
     (async function () {
       allItems = await getAllInventories();
       renderTable();
     })();
 
-    function updateState(newState) {
-      let state = newState;
-    }
-
     async function getAllInventories() {
-      try {
-        const response = await fetch("/api/inventory");
-        const content = await response.json();
+      const response = await fetch("/api/inventory");
+      const content = await response.json();
+
+      if (response.ok) {
         return content;
-      } catch (error) {
-        console.log(error);
-        return []
+      } else {
+        alert(content.message);
+        return {};
       }
     }
 
@@ -182,7 +172,42 @@
     function addItem() {
       updateState(STATE_MAP.add);
       toggleNavBar();
-      updateActionNavbarCallback(function () { }, function () {
+      updateActionNavbarCallback(async function () {
+        const nameInput = document.getElementById("name-input");
+        const costInput = document.getElementById("cost-input");
+        const stockInput = document.getElementById("stock-input");
+        const typeInput = document.getElementById("type-input");
+
+        const responseRaw = await fetch(
+          "/api/inventory",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              name: nameInput.value,
+              costPerUnit: costInput.value,
+              stock: stockInput.value,
+              type: typeInput.value
+            })
+          }
+        );
+
+        const response = await responseRaw.json();
+
+        if (responseRaw.ok) {
+          allItems[response.id] = response;
+        }
+        else {
+          alert(response.message);
+        }
+
+        renderTable();
+        toggleNavBar();
+
+      }, function () {
         toggleNavBar();
         renderTable();
       });

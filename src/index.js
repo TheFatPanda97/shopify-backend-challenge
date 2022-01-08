@@ -1,38 +1,37 @@
 import express from 'express';
-import { Pool } from 'pg';
+import bodyParser from 'body-parser';
 import cors from 'cors';
 
+import Inventory from './controller/inventory';
+
 const app = express();
+const inventory = new Inventory();
 const port = 3000;
 
-const pool = new Pool({
-  host: 'localhost',
-  database: 'webdb',
-  port: 5432,
-});
-
 app.use(cors());
+app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('/api/inventory', async (req, res) => {
+// Get all items
+app.get('/api/inventory', async (__, res) => {
   try {
-    const result = await pool.query('SELECT * FROM inventory;');
-    res.json(
-      result.rows.reduce(
-        (acc, curr) => ({
-          ...acc,
-          [curr.id]: {
-            name: curr.name,
-            costPerUnit: curr.cost_per_unit.slice(1),
-            stock: curr.stock,
-            type: curr.type,
-          },
-        }),
-        {},
-      ),
-    );
+    const allItems = await inventory.getAllItems();
+    res.json(allItems);
   } catch (err) {
     console.log(err);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+});
+
+// Add a new item
+app.post('/api/inventory', async (req, res) => {
+  const { name, costPerUnit, stock, type } = req.body;
+  try {
+    const newItems = await inventory.insertItem({ name, costPerUnit, stock, type });
+    res.json(newItems);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Internal server error' });
   }
 });
 

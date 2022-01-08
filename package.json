@@ -11,9 +11,11 @@
   "author": "TheFatPanda97",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
-    "pg": "^8.7.1"
+    "pg": "^8.7.1",
+    "underscore": "^1.13.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.7",
