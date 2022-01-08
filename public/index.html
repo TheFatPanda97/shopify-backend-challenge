@@ -25,10 +25,10 @@
             <a class="nav-link active" href="#" onclick="toggleAddItem()">Add Item</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="#" id="update-btn">Update Item</a>
+            <a class="nav-link disabled" href="#" id="update-btn">Update Item</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="#" id="delete-btn">Delete Item</a>
+            <a class="nav-link disabled" href="#" id="delete-btn">Delete Item</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="#">Export Items as CSV</a>
@@ -65,7 +65,7 @@
           <th></th>
           <th>id</th>
           <th>Name</th>
-          <th>Cost Per unit</th>
+          <th>Cost Per unit ($)</th>
           <th>Stock</th>
           <th>Type</th>
         </tr>
@@ -87,12 +87,45 @@
 
   <script>
     document.getElementById("action-navbar").style.display = "none";
-    getAllTable();
 
-    async function getAllTable() {
-      const response = await fetch("/api/inventory");
-      const content = await response.json();
-      console.log(content);
+    let allInventory = [];
+
+    (async function () {
+      allInventory = await getAllInventories();
+      renderTable();
+    })();
+
+    async function getAllInventories() {
+      try {
+        const response = await fetch("/api/inventory");
+        const content = await response.json();
+        return content;
+      } catch (error) {
+        console.log(error);
+        return []
+      }
+    }
+
+    async function renderTable() {
+      const tableBody = document.getElementById("table-body");
+      let tableContent = "";
+
+      allInventory.forEach(item => {
+        tableContent += `
+          <tr>
+            <td>
+              <input type="checkbox" />
+            </td>
+            <td>${item.id}</td>
+            <td>${item.name}</td>
+            <td>${item.cost_per_unit.slice(1)}</td>
+            <td>${item.stock}</td>
+            <td>${item.type}</td>
+          </tr>
+        `
+      });
+
+      tableBody.innerHTML = tableContent;
     }
 
     function toggleAddItem() {
@@ -106,6 +139,10 @@
         defaultNavBar.style.display = "none";
         actionNavBar.style.display = "flex";
       }
+    }
+
+    function addItem(){
+      
     }
 
   </script>
