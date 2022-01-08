@@ -22,7 +22,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" href="#" onclick="toggleAddItem()">Add Item</a>
+            <a class="nav-link active" href="#" onclick="addItem()">Add Item</a>
           </li>
           <li class="nav-item">
             <a class="nav-link disabled" href="#" id="update-btn">Update Item</a>
@@ -48,10 +48,10 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" href="#" onclick="toggleAddItem()">Confirm</a>
+            <a id="confirm-btn" class="nav-link active" href="#">Confirm</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="#" onclick="toggleAddItem()">Cancel</a>
+            <a id="cancel-btn" class="nav-link active" href="#">Cancel</a>
           </li>
         </ul>
       </div>
@@ -71,29 +71,31 @@
         </tr>
       </thead>
       <tbody id="table-body">
-        <tr>
-          <td>
-            <input type="checkbox" />
-          </td>
-          <td>Alfreds Futterkiste</td>
-          <td>Maria Anders</td>
-          <td>Germany</td>
-          <td>Germany</td>
-          <td>Germany</td>
-        </tr>
       </tbody>
     </table>
   </div>
 
   <script>
     document.getElementById("action-navbar").style.display = "none";
+    const STATE_MAP = {
+      init: "INIT",
+      add: "ADD",
+      update: "UPDATE",
+      delete: "DELETE"
+    }
 
-    let allInventory = [];
+    let allItems = {};
+    let selectedInventory = {};
+    let state = STATE_MAP.init;
 
     (async function () {
-      allInventory = await getAllInventories();
+      allItems = await getAllInventories();
       renderTable();
     })();
+
+    function updateState(newState) {
+      let state = newState;
+    }
 
     async function getAllInventories() {
       try {
@@ -106,43 +108,81 @@
       }
     }
 
-    async function renderTable() {
+    function getTableBody() {
       const tableBody = document.getElementById("table-body");
       let tableContent = "";
 
-      allInventory.forEach(item => {
+      Object.entries(allItems).forEach(([id, item]) => {
         tableContent += `
           <tr>
             <td>
               <input type="checkbox" />
             </td>
-            <td>${item.id}</td>
+            <td>${id}</td>
             <td>${item.name}</td>
-            <td>${item.cost_per_unit.slice(1)}</td>
+            <td>${item.costPerUnit.slice(1)}</td>
             <td>${item.stock}</td>
             <td>${item.type}</td>
           </tr>
         `
       });
 
-      tableBody.innerHTML = tableContent;
+      return tableContent;
     }
 
-    function toggleAddItem() {
+    function renderTable() {
+      const tableBody = getTableBody();
+      document.getElementById("table-body").innerHTML = tableBody;
+    }
+
+    function updateActionNavbarCallback(onConfirm, onCancel) {
+      document.getElementById("confirm-btn").onclick = onConfirm;
+      document.getElementById("cancel-btn").onclick = onCancel;
+    }
+
+    function toggleNavBar() {
       var defaultNavBar = document.getElementById("default-navbar");
       var actionNavBar = document.getElementById("action-navbar");
 
       if (defaultNavBar.style.display === "none") {
         defaultNavBar.style.display = "flex";
         actionNavBar.style.display = "none";
+        updateActionNavbarCallback(function () { }, function () { });
       } else {
         defaultNavBar.style.display = "none";
         actionNavBar.style.display = "flex";
       }
     }
 
-    function addItem(){
-      
+    function addItem() {
+      updateState(STATE_MAP.add);
+      toggleNavBar();
+      updateActionNavbarCallback(function () { }, function () {
+        toggleNavBar();
+        renderTable();
+      });
+      let tableBody = `
+        <tr>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+            <input id="name-input" type="text" name="name">
+          </td>
+          <td>
+            <input id="cost-input" type="text" name="cost_per_unit">
+          </td>
+          <td>
+            <input id="stock-input" type="text" name="stock">
+          </td>
+          <td>
+            <input id="type-input" type="text" name="type">
+          </td>
+        </tr>
+      `
+      tableBody += getTableBody();
+      document.getElementById("table-body").innerHTML = tableBody;
     }
 
   </script>
