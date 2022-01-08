@@ -1,5 +1,6 @@
 import express from 'express';
 import { Pool } from 'pg';
+import cors from 'cors';
 
 const app = express();
 const port = 3000;
@@ -10,6 +11,7 @@ const pool = new Pool({
   port: 5432,
 });
 
+app.use(cors());
 app.use(express.static('public'));
 
 app.get('/api/inventory', async (req, res) => {

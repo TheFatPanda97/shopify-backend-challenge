@@ -11,6 +11,7 @@
   "author": "TheFatPanda97",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.2",
     "pg": "^8.7.1"
   },
