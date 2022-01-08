@@ -23,7 +23,7 @@ app.get('/api/inventory', async (req, res) => {
           ...acc,
           [curr.id]: {
             name: curr.name,
-            costPerUnit: curr.cost_per_unit,
+            costPerUnit: curr.cost_per_unit.slice(1),
             stock: curr.stock,
             type: curr.type,
           },

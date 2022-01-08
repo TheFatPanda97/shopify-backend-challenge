@@ -85,7 +85,7 @@
     }
 
     let allItems = {};
-    let selectedInventory = {};
+    let selectedItems = {};
     let state = STATE_MAP.init;
 
     (async function () {
@@ -108,6 +108,31 @@
       }
     }
 
+    function onRowChecked(e) {
+      const currCheckbox = e.currentTarget;
+      const parsedId = currCheckbox.id.slice(9)
+
+      if (currCheckbox.checked) {
+        selectedItems[parsedId] = allItems[parsedId];
+      }
+      else {
+        delete selectedItems[parsedId];
+      }
+
+      if (Object.keys(selectedItems).length > 0) {
+        document.getElementById("update-btn").classList.remove("disabled");
+        document.getElementById("delete-btn").classList.remove("disabled");
+        document.getElementById("update-btn").classList.add("active");
+        document.getElementById("delete-btn").classList.add("active");
+      }
+      else {
+        document.getElementById("update-btn").classList.remove("active");
+        document.getElementById("delete-btn").classList.remove("active");
+        document.getElementById("update-btn").classList.add("disabled");
+        document.getElementById("delete-btn").classList.add("disabled");
+      }
+    }
+
     function getTableBody() {
       const tableBody = document.getElementById("table-body");
       let tableContent = "";
@@ -116,11 +141,11 @@
         tableContent += `
           <tr>
             <td>
-              <input type="checkbox" />
+              <input id="checkbox-${id}" type="checkbox" onclick="onRowChecked(event)"/>
             </td>
             <td>${id}</td>
             <td>${item.name}</td>
-            <td>${item.costPerUnit.slice(1)}</td>
+            <td>${item.costPerUnit}</td>
             <td>${item.stock}</td>
             <td>${item.type}</td>
           </tr>
