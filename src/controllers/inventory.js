@@ -15,13 +15,11 @@ class InventoryController {
       connectionString: process.env.DATABASE_URL,
     };
 
-    if (process.env.NODE_ENV === 'PRODUCTION') {
+    if (process.env.NODE_ENV === 'production') {
       configuration.ssl = {
         rejectUnauthorized: false,
       };
     }
-
-    console.log(configuration, process.env.NODE_ENV);
 
     this.pool = new Pool(configuration);
   }
