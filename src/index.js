@@ -2,10 +2,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-import Inventory from './controller/inventory';
+import { ValidationError } from './utils/errors';
+import InventoryController from './controllers/inventory';
 
 const app = express();
-const inventory = new Inventory();
+const inventory = new InventoryController();
 const port = 3000;
 
 app.use(cors());
@@ -30,8 +31,12 @@ app.post('/api/inventory', async (req, res) => {
     const newItems = await inventory.insertItem({ name, costPerUnit, stock, type });
     res.json(newItems);
   } catch (err) {
-    console.log(err);
-    res.status(500).send({ message: 'Internal server error' });
+    if (err instanceof ValidationError) {
+      console.log(err.message);
+      res.status(400).send({ message: err.message });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
   }
 });
 

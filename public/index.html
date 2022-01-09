@@ -170,7 +170,6 @@
     }
 
     function addItem() {
-      updateState(STATE_MAP.add);
       toggleNavBar();
       updateActionNavbarCallback(async function () {
         const nameInput = document.getElementById("name-input");
@@ -198,7 +197,9 @@
         const response = await responseRaw.json();
 
         if (responseRaw.ok) {
-          allItems[response.id] = response;
+          Object.entries(response).forEach(([id, item]) => {
+            allItems[id] = item;
+          });
         }
         else {
           alert(response.message);
