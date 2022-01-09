@@ -35,8 +35,23 @@ router.post('/items', async (req, res) => {
 
 router.post('/delete-items', async (req, res) => {
   try {
-    const deletedItem = await inventory.deleteItems(req.body);
-    res.json(deletedItem);
+    const deletedItems = await inventory.deleteItems(req.body);
+    res.json(deletedItems);
+  } catch (err) {
+    console.log(err);
+
+    if (err instanceof ValidationError) {
+      res.status(400).send({ message: err.message });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  }
+});
+
+router.patch('/update-items', async (req, res) => {
+  try {
+    const updatedItems = await inventory.updateItems(req.body);
+    res.json(updatedItems);
   } catch (err) {
     console.log(err);
 
