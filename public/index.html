@@ -87,7 +87,7 @@
     })();
 
     async function getAllInventories() {
-      const response = await fetch("/api/inventory");
+      const response = await fetch("/api/inventory/items");
       const content = await response.json();
 
       if (response.ok) {
@@ -178,19 +178,19 @@
         const typeInput = document.getElementById("type-input");
 
         const responseRaw = await fetch(
-          "/api/inventory",
+          "/api/inventory/items",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Accept": "application/json"
             },
-            body: JSON.stringify({
+            body: JSON.stringify([{
               name: nameInput.value,
               costPerUnit: costInput.value,
               stock: stockInput.value,
               type: typeInput.value
-            })
+            }])
           }
         );
 
