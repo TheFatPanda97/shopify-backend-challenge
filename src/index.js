@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/extensions
+import 'regenerator-runtime/runtime.js';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
