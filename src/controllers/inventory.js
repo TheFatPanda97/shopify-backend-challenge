@@ -1,18 +1,27 @@
 import { Pool } from 'pg';
+import dotenv from 'dotenv';
 import _ from 'underscore';
 
 import { ValidationError } from '../utils/errors';
 import { isPositiveInteger, isPositiveFloat } from '../utils/helpers';
 
+dotenv.config();
+
 class InventoryController {
   pool;
 
   constructor() {
-    this.pool = new Pool({
-      host: 'localhost',
-      database: 'webdb',
-      port: 5432,
-    });
+    const configuration = {
+      connectionString: process.env.DATABASE_URL,
+    };
+
+    if (process.env.NODE_ENV === 'PRODUCTION') {
+      configuration.ssl = {
+        rejectUnauthorized: false,
+      };
+    }
+
+    this.pool = new Pool(configuration);
   }
 
   static validateItemData({ name, costPerUnit, stock, type }, skipValidation = {}) {
