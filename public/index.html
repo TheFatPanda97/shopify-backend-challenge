@@ -340,32 +340,6 @@
         `
       });
 
-      Object.entries(allItems).forEach(([id, item]) => {
-        if (!(id in selectedItems)) {
-          tableBody += `
-            <tr>
-              <td>
-              </td>
-              <td>
-              ${id}
-              </td>
-              <td>
-                ${item.name}
-              </td>
-              <td>
-                ${item.costPerUnit}
-              </td>
-              <td>
-                ${item.stock}
-              </td>
-              <td>
-                ${item.type}
-              </td>
-            </tr>
-          `
-        }
-      });
-
       document.getElementById("table-body").innerHTML = tableBody;
     }
 

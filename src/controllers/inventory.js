@@ -27,8 +27,12 @@ class InventoryController {
   static validateItemData({ name, costPerUnit, stock, type }, skipValidation = {}) {
     const errors = [];
 
-    if ((!skipValidation.name && !name) || !_.isString(name)) {
-      errors.push('Name must be a string');
+    if (!skipValidation.name && !name) {
+      if (!_.isString(name)) {
+        errors.push('Name must be a string');
+      } else if (name === '') {
+        errors.push('Name cannot be empty');
+      }
     }
 
     if ((!skipValidation.costPerUnit && !costPerUnit) || !isPositiveFloat(costPerUnit)) {
@@ -39,8 +43,12 @@ class InventoryController {
       errors.push('Stock must be a positive integer');
     }
 
-    if ((!skipValidation.type && !type) || !_.isString(type)) {
-      errors.push('Type must be a string');
+    if (!skipValidation.type && !type) {
+      if (!_.isString(type)) {
+        errors.push('Type must be a string');
+      } else if (type === '') {
+        errors.push('Type cannot be empty');
+      }
     }
 
     return errors;
@@ -148,6 +156,35 @@ class InventoryController {
     }
 
     return result.rows.map(({ id }) => id);
+  }
+
+  async updateItems(items) {
+    if (!_.isObject(items) && !_.isArray(items)) {
+      throw new ValidationError('Items must be an object');
+    }
+
+    const values = items.reduce((acc, item, index) => {
+      if (!_.isObject(item)) {
+        throw new ValidationError('Items must be an array of objects');
+      }
+
+      const { name, costPerUnit, stock, type } = item;
+      const errors = InventoryController.validateItemData({ name, costPerUnit, stock, type });
+
+      if (!_.isEmpty(errors)) {
+        throw new ValidationError(`Item ${index}: ${errors}`);
+      }
+
+      return [...acc, name, Number(costPerUnit), Number(stock), type];
+    }, []);
+
+    /**
+     * An query string of the form:
+     * UPDATE inventory
+     * SET name=tmp.name
+     * FROM (values (1, 'new1'), (2, 'new2'), (6, 'new6')) as tmp (id, name)
+     * WHERE inventory.id = tmp.id;
+     *  */
   }
 }
 

@@ -4,7 +4,9 @@ CREATE TABLE inventory (
     name VARCHAR(100) NOT NULL,
     cost_per_unit MONEY NOT NULL,
     stock INT NOT NULL,
-    type VARCHAR(100) NOT NULL
+    type VARCHAR(100) NOT NULL,
+    CHECK (name <> ''),
+    CHECK (type <> '')
 );
 INSERT INTO inventory (name, cost_per_unit, stock, type) 
 VALUES (
