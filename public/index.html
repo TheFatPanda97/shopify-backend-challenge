@@ -206,7 +206,7 @@
           alert("Item added successfully!");
         }
         else {
-          alert(response.message);
+          return alert(response.message);
         }
 
         renderTable();
@@ -262,7 +262,7 @@
           alert("Items deleted successfully!");
         }
         else {
-          alert(response.message);
+          return alert(response.message);
         }
 
         selectedItems = {};
