@@ -27,8 +27,7 @@ class InventoryController {
 
   static validateItemData({ name, costPerUnit, stock, type }, skipValidation = {}) {
     const errors = [];
-
-    if (!skipValidation.name && !name) {
+    if (!skipValidation.name) {
       if (!_.isString(name)) {
         errors.push('Name must be a string');
       } else if (name === '') {
@@ -36,11 +35,11 @@ class InventoryController {
       }
     }
 
-    if ((!skipValidation.costPerUnit && !costPerUnit) || !isPositiveFloat(costPerUnit)) {
+    if (!skipValidation.costPerUnit && !isPositiveFloat(costPerUnit)) {
       errors.push('Cost per unit must be a positive float');
     }
 
-    if ((!skipValidation.stock && !stock) || !isPositiveInteger(stock)) {
+    if (!skipValidation.stock && !isPositiveInteger(stock)) {
       errors.push('Stock must be a positive integer');
     }
 
@@ -60,10 +59,13 @@ class InventoryController {
       (acc, curr) => ({
         ...acc,
         [curr.id]: {
-          name: curr.name,
-          costPerUnit: curr.cost_per_unit.slice(1),
-          stock: curr.stock,
-          type: curr.type,
+          name: _.isUndefined(curr.name) || _.isNull(curr.name) ? undefined : curr.name,
+          costPerUnit:
+            _.isUndefined(curr.cost_per_unit) || _.isNull(curr.cost_per_unit)
+              ? undefined
+              : curr.cost_per_unit.slice(1),
+          stock: _.isUndefined(curr.stock) || _.isNull(curr.stock) ? undefined : curr.stock,
+          type: _.isUndefined(curr.type) || _.isNull(curr.type) ? undefined : curr.type,
         },
       }),
       {},
@@ -200,7 +202,7 @@ class InventoryController {
 
       return [
         ...acc,
-        id,
+        Number(id),
         _.isUndefined(name) ? null : name.trim(),
         _.isUndefined(costPerUnit) ? null : Number(costPerUnit),
         _.isUndefined(stock) ? null : Number(stock),
@@ -241,8 +243,8 @@ class InventoryController {
       FROM (VALUES${Object.entries(items)
         .map(
           ([__, item], itemIndex) =>
-            `(${Object.keys(item)
-              .forEach(
+            `(${[...new Array(5)]
+              .map(
                 (___, attributeIndex) =>
                   `$${itemIndex * Object.keys(item).length + attributeIndex + 1}`,
               )
@@ -250,7 +252,8 @@ class InventoryController {
         )
         .join(',')})
         AS tmp (id, name, cost_per_unit, stock, type)
-      WHERE inventory.id = tmp.id;
+      WHERE inventory.id = tmp.id::INT
+      RETURNING *;
     `;
 
     result = await this.pool.query(query, values);
