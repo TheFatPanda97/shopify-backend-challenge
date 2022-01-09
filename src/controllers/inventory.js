@@ -138,18 +138,7 @@ class InventoryController {
       throw new ValidationError('Item not found');
     }
 
-    return result.rows.reduce(
-      (acc, curr) => ({
-        ...acc,
-        [curr.id]: {
-          name: curr.name.trim(),
-          costPerUnit: curr.cost_per_unit.slice(1),
-          stock: curr.stock,
-          type: curr.type.trim(),
-        },
-      }),
-      {},
-    );
+    return result.rows.map(({ id }) => id);
   }
 }
 

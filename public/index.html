@@ -25,10 +25,10 @@
             <a class="nav-link active" href="#" onclick="addItem()">Add Item</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#" id="update-btn">Update Item</a>
+            <a class="nav-link disabled" href="#" id="update-btn">Update Items</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#" id="delete-btn" onclick="deleteItem()">Delete Item</a>
+            <a class="nav-link disabled" href="#" id="delete-btn" onclick="deleteItem()">Delete Items</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="#">Export Items as CSV</a>
@@ -98,17 +98,7 @@
       }
     }
 
-    function onRowChecked(e) {
-      const currCheckbox = e.currentTarget;
-      const parsedId = currCheckbox.id.slice(9)
-
-      if (currCheckbox.checked) {
-        selectedItems[parsedId] = allItems[parsedId];
-      }
-      else {
-        delete selectedItems[parsedId];
-      }
-
+    function updateNavbarItemStyle() {
       if (Object.keys(selectedItems).length > 0) {
         document.getElementById("update-btn").classList.remove("disabled");
         document.getElementById("delete-btn").classList.remove("disabled");
@@ -121,6 +111,20 @@
         document.getElementById("update-btn").classList.add("disabled");
         document.getElementById("delete-btn").classList.add("disabled");
       }
+    }
+
+    function onRowChecked(e) {
+      const currCheckbox = e.currentTarget;
+      const parsedId = currCheckbox.id.slice(9)
+
+      if (currCheckbox.checked) {
+        selectedItems[parsedId] = allItems[parsedId];
+      }
+      else {
+        delete selectedItems[parsedId];
+      }
+
+      updateNavbarItemStyle();
     }
 
     function getTableBody() {
@@ -183,7 +187,6 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json"
             },
             body: JSON.stringify([{
               name: nameInput.value,
@@ -200,6 +203,7 @@
           Object.entries(response).forEach(([id, item]) => {
             allItems[id] = item;
           });
+          alert("Item added successfully!");
         }
         else {
           alert(response.message);
@@ -207,7 +211,6 @@
 
         renderTable();
         toggleNavBar();
-
       }, function () {
         toggleNavBar();
         renderTable();
@@ -240,34 +243,37 @@
       toggleNavBar();
       updateActionNavbarCallback(async function () {
         const responseRaw = await fetch(
-          "/api/inventory",
+          "/api/inventory/delete-items",
           {
-            method: "DELETE",
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json"
             },
-            body: JSON.stringify(selectedItems)
+            body: JSON.stringify(Object.keys(selectedItems))
           }
         );
 
         const response = await responseRaw.json();
 
         if (responseRaw.ok) {
-          Object.entries(response).forEach(([id, item]) => {
+          response.forEach((id) => {
             delete allItems[id];
           });
+          alert("Items deleted successfully!");
         }
         else {
           alert(response.message);
         }
 
+        selectedItems = {};
         renderTable();
         toggleNavBar();
-
+        updateNavbarItemStyle();
       }, function () {
+        selectedItems = {};
         toggleNavBar();
         renderTable();
+        updateNavbarItemStyle();
       });
     }
 
