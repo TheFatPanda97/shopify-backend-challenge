@@ -28,7 +28,7 @@
             <a class="nav-link disabled" href="#" id="update-btn">Update Item</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#" id="delete-btn">Delete Item</a>
+            <a class="nav-link disabled" href="#" id="delete-btn" onclick="deleteItem()">Delete Item</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="#">Export Items as CSV</a>
@@ -234,6 +234,41 @@
       `
       tableBody += getTableBody();
       document.getElementById("table-body").innerHTML = tableBody;
+    }
+
+    function deleteItem() {
+      toggleNavBar();
+      updateActionNavbarCallback(async function () {
+        const responseRaw = await fetch(
+          "/api/inventory",
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify(selectedItems)
+          }
+        );
+
+        const response = await responseRaw.json();
+
+        if (responseRaw.ok) {
+          Object.entries(response).forEach(([id, item]) => {
+            delete allItems[id];
+          });
+        }
+        else {
+          alert(response.message);
+        }
+
+        renderTable();
+        toggleNavBar();
+
+      }, function () {
+        toggleNavBar();
+        renderTable();
+      });
     }
 
   </script>

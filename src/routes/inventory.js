@@ -7,7 +7,7 @@ const router = express.Router();
 const inventory = new InventoryController();
 
 // Get all items
-router.get('/', async (_, res) => {
+router.get('/items', async (_, res) => {
   try {
     const allItems = await inventory.getAllItems();
     res.json(allItems);
@@ -18,14 +18,30 @@ router.get('/', async (_, res) => {
 });
 
 // Add a new item
-router.post('/', async (req, res) => {
-  const { name, costPerUnit, stock, type } = req.body;
+router.post('/items', async (req, res) => {
   try {
-    const newItems = await inventory.insertItem({ name, costPerUnit, stock, type });
+    const newItems = await inventory.insertItems(req.body);
     res.json(newItems);
   } catch (err) {
+    console.log(err);
+
     if (err instanceof ValidationError) {
-      console.log(err.message);
+      res.status(400).send({ message: err.message });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  }
+});
+
+router.post('/delete-items', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedItem = await inventory.deleteItem(id);
+    res.json(deletedItem);
+  } catch (err) {
+    console.log(err);
+
+    if (err instanceof ValidationError) {
       res.status(400).send({ message: err.message });
     } else {
       res.status(500).send({ message: 'Internal server error' });

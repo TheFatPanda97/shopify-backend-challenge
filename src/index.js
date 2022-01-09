@@ -8,7 +8,15 @@ const app = express();
 const port = 3000;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use((req, res, next) => {
+  bodyParser.json()(req, res, (err) => {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(400);
+    }
+    next();
+  });
+});
 app.use(express.static('public'));
 
 app.use('/api/inventory', inventoryRoutes);
