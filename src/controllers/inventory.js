@@ -21,6 +21,8 @@ class InventoryController {
       };
     }
 
+    console.log(configuration, process.env.NODE_ENV);
+
     this.pool = new Pool(configuration);
   }
 
