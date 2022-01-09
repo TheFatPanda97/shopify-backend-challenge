@@ -34,9 +34,8 @@ router.post('/items', async (req, res) => {
 });
 
 router.post('/delete-items', async (req, res) => {
-  const { id } = req.params;
   try {
-    const deletedItem = await inventory.deleteItem(id);
+    const deletedItem = await inventory.deleteItems(req.body);
     res.json(deletedItem);
   } catch (err) {
     console.log(err);

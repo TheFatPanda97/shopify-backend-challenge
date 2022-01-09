@@ -104,12 +104,35 @@ class InventoryController {
     );
   }
 
-  async deleteItem(id) {
-    if (!isPositiveInteger(id)) {
-      throw new ValidationError('Id must be a positive integer');
+  async deleteItems(ids) {
+    if (!_.isArray(ids)) {
+      throw new ValidationError('Ids must be an array');
     }
 
-    const result = await this.pool.query('DELETE FROM inventory WHERE id = $1 RETURNING *', [id]);
+    if (_.isEmpty(ids)) {
+      throw new ValidationError('Ids can not be empty');
+    }
+
+    ids.forEach((id) => {
+      if (!isPositiveInteger(id)) {
+        throw new ValidationError('Ids must be positive integers');
+      }
+    });
+
+    let query = `SELECT * FROM inventory WHERE id IN (${ids
+      .map((__, index) => `$${index + 1}`)
+      .join(',')});`;
+
+    let result = await this.pool.query(query, ids);
+    if (result.rowCount !== ids.length) {
+      throw new ValidationError('One or more ids do not exist');
+    }
+
+    query = `DELETE FROM inventory WHERE id IN (${ids
+      .map((__, index) => `$${index + 1}`)
+      .join(',')}) RETURNING *`;
+
+    result = await this.pool.query(query, ids);
 
     if (result.rowCount === 0) {
       throw new ValidationError('Item not found');
