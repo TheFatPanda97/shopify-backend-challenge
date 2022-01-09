@@ -25,10 +25,10 @@
             <a class="nav-link active" href="#" onclick="addItem()">Add Item</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#" id="update-btn">Update Items</a>
+            <a class="nav-link disabled" href="#" id="update-btn" onclick="updateItems()">Update Items</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#" id="delete-btn" onclick="deleteItem()">Delete Items</a>
+            <a class="nav-link disabled" href="#" id="delete-btn" onclick="deleteItems()">Delete Items</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="#">Export Items as CSV</a>
@@ -239,7 +239,7 @@
       document.getElementById("table-body").innerHTML = tableBody;
     }
 
-    function deleteItem() {
+    function deleteItems() {
       toggleNavBar();
       updateActionNavbarCallback(async function () {
         const responseRaw = await fetch(
@@ -275,6 +275,98 @@
         renderTable();
         updateNavbarItemStyle();
       });
+    }
+
+    function updateItems() {
+      toggleNavBar();
+      updateActionNavbarCallback(async function () {
+        const responseRaw = await fetch(
+          "/api/inventory/delete-items",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Object.keys(selectedItems))
+          }
+        );
+
+        const response = await responseRaw.json();
+
+        if (responseRaw.ok) {
+          response.forEach((id) => {
+            delete allItems[id];
+          });
+          alert("Items deleted successfully!");
+        }
+        else {
+          return alert(response.message);
+        }
+
+        selectedItems = {};
+        renderTable();
+        toggleNavBar();
+        updateNavbarItemStyle();
+      }, function () {
+        selectedItems = {};
+        toggleNavBar();
+        renderTable();
+        updateNavbarItemStyle();
+      });
+
+      let tableBody = "";
+
+      Object.entries(selectedItems).forEach(([id, item]) => {
+        tableBody += `
+          <tr>
+            <td>
+            </td>
+            <td>
+              ${id}
+            </td>
+            <td>
+              <input id="name-input" type="text" name="name" value="${item.name}">
+            </td>
+            <td>
+              <input id="cost-input" type="text" name="cost_per_unit" value="${item.costPerUnit}">
+            </td>
+            <td>
+              <input id="stock-input" type="text" name="stock" value="${item.stock}">
+            </td>
+            <td>
+              <input id="type-input" type="text" name="type" value="${item.type}">
+            </td>
+          </tr>
+        `
+      });
+
+      Object.entries(allItems).forEach(([id, item]) => {
+        if (!(id in selectedItems)) {
+          tableBody += `
+            <tr>
+              <td>
+              </td>
+              <td>
+              ${id}
+              </td>
+              <td>
+                ${item.name}
+              </td>
+              <td>
+                ${item.costPerUnit}
+              </td>
+              <td>
+                ${item.stock}
+              </td>
+              <td>
+                ${item.type}
+              </td>
+            </tr>
+          `
+        }
+      });
+
+      document.getElementById("table-body").innerHTML = tableBody;
     }
 
   </script>
