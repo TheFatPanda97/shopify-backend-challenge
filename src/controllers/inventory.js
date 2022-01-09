@@ -68,10 +68,10 @@ class InventoryController {
       (acc, curr) => ({
         ...acc,
         [curr.id]: {
-          name: curr.name,
+          name: curr.name.trim(),
           costPerUnit: curr.cost_per_unit.slice(1),
           stock: curr.stock,
-          type: curr.type,
+          type: curr.type.trim(),
         },
       }),
       {},
