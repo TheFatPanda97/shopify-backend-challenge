@@ -17,6 +17,19 @@ router.get('/items', async (_, res) => {
   }
 });
 
+// Export all data as CSV
+router.get('/export-csv', async (_, res) => {
+  try {
+    const csv = await inventory.exportCSV();
+    res.header('Content-Type', 'text/csv');
+    res.attachment('inventory.csv');
+    return res.send(csv);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+});
+
 // Add a new item
 router.post('/items', async (req, res) => {
   try {

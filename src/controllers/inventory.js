@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import { parse } from 'json2csv';
 import _ from 'underscore';
 
 import { ValidationError } from '../utils/errors';
@@ -54,7 +55,7 @@ class InventoryController {
     return errors;
   }
 
-  static parsedReturnedItem(rows) {
+  static parsedReturnedItems(rows) {
     return rows.reduce(
       (acc, curr) => ({
         ...acc,
@@ -74,7 +75,7 @@ class InventoryController {
 
   async getAllItems() {
     const result = await this.pool.query('SELECT * FROM inventory;');
-    return InventoryController.parsedReturnedItem(result.rows);
+    return InventoryController.parsedReturnedItems(result.rows);
   }
 
   async insertItems(items) {
@@ -114,7 +115,7 @@ class InventoryController {
       .join(',')} RETURNING *`;
 
     const result = await this.pool.query(query, values);
-    return InventoryController.parsedReturnedItem(result.rows);
+    return InventoryController.parsedReturnedItems(result.rows);
   }
 
   async deleteItems(ids) {
@@ -254,7 +255,17 @@ class InventoryController {
     `;
 
     result = await this.pool.query(query, values);
-    return InventoryController.parsedReturnedItem(result.rows);
+    return InventoryController.parsedReturnedItems(result.rows);
+  }
+
+  async exportCSV() {
+    const query = 'SELECT * FROM inventory';
+    const result = await this.pool.query(query);
+
+    const fields = ['id', 'name', 'cost_per_unit', 'stock', 'type'];
+    const opts = { fields };
+
+    return parse(result.rows, opts);
   }
 }
 
