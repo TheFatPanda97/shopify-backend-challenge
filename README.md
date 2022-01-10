@@ -1,6 +1,6 @@
 # Overview
 
-This repo contains the source code for the Shopify Summer 2022 [Backend Developer Intern Challenge](https://docs.google.com/document/d/1z9LZ_kZBUbg-O2MhZVVSqTmvDko5IJWHtuFmIu_Xg1A/edit). I hope you enjoy read through it😄
+This repo contains the source code for the Shopify Summer 2022 [Backend Developer Intern Challenge](https://docs.google.com/document/d/1z9LZ_kZBUbg-O2MhZVVSqTmvDko5IJWHtuFmIu_Xg1A/edit). I hope you enjoy reading through it 😄
 
 # Project Description
 
@@ -20,9 +20,9 @@ Prerequisites:
 
 # API
 
-endpoint: `/api/inventory/items`:
-method: GET
-return: 
+### `/api/inventory/items`:
+- method: GET
+- return: 
 ```
 {
   [id]: {
@@ -33,8 +33,8 @@ return:
   }
 }
 ```
-description: Returns all inventory items
-example:
+- description: Returns all inventory items
+- example:
 
 ```json
 {
