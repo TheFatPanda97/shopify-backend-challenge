@@ -280,24 +280,42 @@
     function updateItems() {
       toggleNavBar();
       updateActionNavbarCallback(async function () {
+        const toUpdateItems = {};
+
+        Object.entries(selectedItems).forEach(([id, item]) => {
+          const nameInput = document.getElementById(`name-input-${id}`);
+          const costInput = document.getElementById(`cost-input-${id}`);
+          const stockInput = document.getElementById(`stock-input-${id}`);
+          const typeInput = document.getElementById(`type-input-${id}`);
+
+          toUpdateItems[id] = {
+            name: nameInput.value,
+            costPerUnit: costInput.value,
+            stock: stockInput.value,
+            type: typeInput.value
+          };
+        });
+
         const responseRaw = await fetch(
-          "/api/inventory/delete-items",
+          "/api/inventory/update-items",
           {
-            method: "POST",
+            method: "PATCH",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(Object.keys(selectedItems))
+            body: JSON.stringify(toUpdateItems)
           }
         );
 
         const response = await responseRaw.json();
 
         if (responseRaw.ok) {
-          response.forEach((id) => {
-            delete allItems[id];
+          Object.entries(response).forEach(([id, item]) => {
+            Object.entries(item).forEach(([key, value]) => {
+              allItems[id][key] = value;
+            });
           });
-          alert("Items deleted successfully!");
+          alert("Items Updated successfully!");
         }
         else {
           return alert(response.message);
@@ -321,20 +339,20 @@
           <tr>
             <td>
             </td>
-            <td>
+            <td id="item-id-${id}">
               ${id}
             </td>
             <td>
-              <input id="name-input" type="text" name="name" value="${item.name}">
+              <input id="name-input-${id}" type="text" name="name" value="${item.name}">
             </td>
             <td>
-              <input id="cost-input" type="text" name="cost_per_unit" value="${item.costPerUnit}">
+              <input id="cost-input-${id}" type="text" name="cost_per_unit" value="${item.costPerUnit}">
             </td>
             <td>
-              <input id="stock-input" type="text" name="stock" value="${item.stock}">
+              <input id="stock-input-${id}" type="text" name="stock" value="${item.stock}">
             </td>
             <td>
-              <input id="type-input" type="text" name="type" value="${item.type}">
+              <input id="type-input-${id}" type="text" name="type" value="${item.type}">
             </td>
           </tr>
         `

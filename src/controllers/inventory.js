@@ -91,7 +91,7 @@ class InventoryController {
       const errors = InventoryController.validateItemData({ name, costPerUnit, stock, type });
 
       if (!_.isEmpty(errors)) {
-        throw new ValidationError(`Item ${index}: ${errors}`);
+        throw new ValidationError(`Item number ${index}: ${errors}`);
       }
 
       return [...acc, name.trim(), Number(costPerUnit), Number(stock), type.trim()];
@@ -197,7 +197,7 @@ class InventoryController {
       );
 
       if (!_.isEmpty(errors)) {
-        throw new ValidationError(`Item ${index}: ${errors}`);
+        throw new ValidationError(`Item id ${id}: ${errors}`);
       }
 
       return [
@@ -242,18 +242,15 @@ class InventoryController {
           END
       FROM (VALUES${Object.entries(items)
         .map(
-          ([__, item], itemIndex) =>
+          (__, itemIndex) =>
             `(${[...new Array(5)]
-              .map(
-                (___, attributeIndex) =>
-                  `$${itemIndex * Object.keys(item).length + attributeIndex + 1}`,
-              )
+              .map((___, attributeIndex) => `$${itemIndex * 5 + attributeIndex + 1}`)
               .join(',')})`,
         )
         .join(',')})
         AS tmp (id, name, cost_per_unit, stock, type)
       WHERE inventory.id = tmp.id::INT
-      RETURNING *;
+      RETURNING *, tmp.cost_per_unit::MONEY;
     `;
 
     result = await this.pool.query(query, values);
