@@ -46,6 +46,7 @@ router.post('/items', async (req, res) => {
   }
 });
 
+// Delete items given an array of ids
 router.post('/delete-items', async (req, res) => {
   try {
     const deletedItems = await inventory.deleteItems(req.body);
@@ -61,6 +62,7 @@ router.post('/delete-items', async (req, res) => {
   }
 });
 
+// Update items given an object of items keyed by id
 router.patch('/update-items', async (req, res) => {
   try {
     const updatedItems = await inventory.updateItems(req.body);

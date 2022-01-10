@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable indent */
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
@@ -9,6 +10,12 @@ import { isPositiveInteger, isPositiveFloat } from '../utils/helpers';
 
 dotenv.config();
 
+/**
+ * @constructor none
+ * @description The controller for the inventory model
+ * @example
+ * const inventory = new InventoryController();
+ */
 class InventoryController {
   pool;
 
@@ -26,8 +33,21 @@ class InventoryController {
     this.pool = new Pool(configuration);
   }
 
+  /**
+   * @param {{name: string, costPerUnit: string|number, stock: string|number, type: string}} data
+   * - The data to validate
+   * @param {{name?: boolean, costPerUnit?: boolean, stock?: boolean, type?: boolean}} skipValidation
+   * - An object containing the keys of the data to skip validation, default {}
+   * @returns {string[]} A array of error messages
+   * @description Validates the given data with the following rules:
+   * - name: string, not empty
+   * - costPerUnit: positive number (including 0)
+   * - stock: positive integer (including 0)
+   * - type: string, not empty
+   */
   static validateItemData({ name, costPerUnit, stock, type }, skipValidation = {}) {
     const errors = [];
+
     if (!skipValidation.name) {
       if (!_.isString(name)) {
         errors.push('Name must be a string');
@@ -55,6 +75,15 @@ class InventoryController {
     return errors;
   }
 
+  /**
+   * @param {{name: string, cost_per_unit: string, stock: string, type: string}[]} rows
+   * The rows returned from the database
+   * @returns {{
+   *  [key: string]: {name: string, costPerUnit: string, stock: string, type: string}
+   * }}
+   * Data keyed by id
+   * @description Parses the given rows into a data object keyed by id
+   */
   static parsedReturnedItems(rows) {
     return rows.reduce(
       (acc, curr) => ({
@@ -73,11 +102,25 @@ class InventoryController {
     );
   }
 
+  /**
+   *
+   * @returns {Promise<{[key: string]: {name: string, costPerUnit: string, stock: string, type: string}}>}
+   * A promise that resolves to the all the data keyed by id
+   * @description Gets all the data from the inventory table
+   */
   async getAllItems() {
     const result = await this.pool.query('SELECT * FROM inventory;');
     return InventoryController.parsedReturnedItems(result.rows);
   }
 
+  /**
+   *
+   * @param {{name: string, costPerUnit: string, stock: string, type: string}[]} items
+   * The items to be inserted
+   * @returns {Promise<{[key: string]: {name: string, costPerUnit: string, stock: string, type: string}}>}
+   * A promise that resolves to the inserted data keyed by id
+   * @description Inserts the given items into the inventory table
+   */
   async insertItems(items) {
     if (_.isEmpty(items)) {
       throw new ValidationError('Items can not be empty');
@@ -118,6 +161,14 @@ class InventoryController {
     return InventoryController.parsedReturnedItems(result.rows);
   }
 
+  /**
+   *
+   * @param {string[]} ids
+   * The items to be deleted
+   * @returns {Promise<{[key: string]: {name: string, costPerUnit: string, stock: string, type: string}}>}
+   * A promise that resolves to the deleted data keyed by id
+   * @description Deletes the given items from the inventory table
+   */
   async deleteItems(ids) {
     if (!_.isArray(ids)) {
       throw new ValidationError('Ids must be an array');
@@ -133,6 +184,7 @@ class InventoryController {
       }
     });
 
+    // check if the ids exist
     let query = `SELECT * FROM inventory WHERE id IN (${ids
       .map((__, index) => `$${index + 1}`)
       .join(',')});`;
@@ -155,6 +207,15 @@ class InventoryController {
     return result.rows.map(({ id }) => id);
   }
 
+  /**
+   *
+   * @param {{
+   *  [key: string]: {name: string, costPerUnit: string, stock: string, type: string}
+   * }} items
+   * @returns {Promise<{[key: string]: {name?: string, costPerUnit?: string, stock?: string, type?: string}}>}
+   * @description Updates the given items in the inventory table. Note: not all attributes have to be provided
+   * If an attribute is not provided, it will not be updated
+   */
   async updateItems(items) {
     if (!_.isObject(items) && !_.isArray(items)) {
       throw new ValidationError('Items must be an object');
@@ -168,6 +229,7 @@ class InventoryController {
       }
     });
 
+    // check if the ids exist
     let query = `SELECT * FROM inventory WHERE id IN (${ids
       .map((__, index) => `$${index + 1}`)
       .join(',')});`;
@@ -177,7 +239,7 @@ class InventoryController {
       throw new ValidationError('One or more ids do not exist');
     }
 
-    const values = Object.entries(items).reduce((acc, [id, item], index) => {
+    const values = Object.entries(items).reduce((acc, [id, item]) => {
       if (_.isArray(item) || !_.isObject(item)) {
         throw new ValidationError('Items must be an array of objects');
       }
@@ -219,10 +281,9 @@ class InventoryController {
      *                ELSE tmp.name
      *     END
      * ...
-     * FROM (values (22, 'new name', ...), ...) AS tmp (id, name, ...)
+     * FROM (values ($1, ...), ($6, ...)) AS tmp (id, name, ...)
      * WHERE inventory.id = tmp.id;
      *  */
-
     query = `
       UPDATE inventory
       SET name = CASE
@@ -258,6 +319,11 @@ class InventoryController {
     return InventoryController.parsedReturnedItems(result.rows);
   }
 
+  /**
+   *
+   * @returns {Promise<string>}
+   * @description Returns the current date into a CSV
+   */
   async exportCSV() {
     const query = 'SELECT * FROM inventory';
     const result = await this.pool.query(query);

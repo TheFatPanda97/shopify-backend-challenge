@@ -1,5 +1,11 @@
 import _ from 'underscore';
 
+/**
+ * @param {number|string} rawNum
+ * @returns {boolean}
+ * if rawNum is a positive number or a string that can be parsed to a positive number.
+ * Note: 0 is positive in this case.
+ */
 export const isPositiveFloat = (rawNum) => {
   const num = Number(rawNum);
 
@@ -10,6 +16,12 @@ export const isPositiveFloat = (rawNum) => {
   return false;
 };
 
+/**
+ * @param {number|string} rawNum
+ * @returns {boolean}
+ * if rawNum is a positive integer or a string that can be parsed to a positive integer
+ * Note: 0 is positive in this case.
+ */
 export const isPositiveInteger = (rawNum) => {
   const num = Number(rawNum);
 

@@ -20,7 +20,6 @@ app.use((req, res, next) => {
   });
 });
 app.use(express.static('public'));
-
 app.use('/api/inventory', inventoryRoutes);
 
 // 404 page
