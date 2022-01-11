@@ -31,8 +31,7 @@ src/
 ```
 
 # Setup
-
-**Prerequisites:**
+### Prerequisites:
 
 - Node.js v14+
 - PostgreSQL
