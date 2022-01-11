@@ -204,7 +204,6 @@
         const stockInput = document.getElementById("stock-input");
         const typeInput = document.getElementById("type-input");
         const loadingContainer = document.getElementById("loading-container");
-
         loadingContainer.style.display = "flex";
 
         const responseRaw = await fetch(
@@ -270,6 +269,9 @@
     function deleteItems() {
       toggleNavBar();
       updateActionNavbarCallback(async function () {
+        const loadingContainer = document.getElementById("loading-container");
+        loadingContainer.style.display = "flex";
+
         const responseRaw = await fetch(
           "/api/inventory/delete-items",
           {
@@ -282,6 +284,8 @@
         );
 
         const response = await responseRaw.json();
+
+        loadingContainer.style.display = "none";
 
         if (responseRaw.ok) {
           response.forEach((id) => {
@@ -309,6 +313,8 @@
       toggleNavBar();
       updateActionNavbarCallback(async function () {
         const toUpdateItems = {};
+        const loadingContainer = document.getElementById("loading-container");
+        loadingContainer.style.display = "flex";
 
         Object.entries(selectedItems).forEach(([id, item]) => {
           const nameInput = document.getElementById(`name-input-${id}`);
@@ -336,6 +342,8 @@
         );
 
         const response = await responseRaw.json();
+
+        loadingContainer.style.display = "none";
 
         if (responseRaw.ok) {
           Object.entries(response).forEach(([id, item]) => {
