@@ -50,9 +50,8 @@ The application is designed to be very extendable. Currently, the only functiona
 
 # API
 
-### `/api/inventory/items`:
+### `GET /api/inventory/items`:
 
-- method: GET
 - description: Returns all inventory items
 - return type:
 
@@ -79,28 +78,8 @@ The application is designed to be very extendable. Currently, the only functiona
 }
 ```
 
-### `/api/inventory/export-csv`:
+### `POST /api/inventory/items`:
 
-- method: GET
-- description: Returns all inventory items in a csv file
-- return type: `inventory.csv`
-- return example:
-```csv
-"id","name","cost_per_unit","stock","type"
-2,"Water","$0.70",1000,"food"
-8,"Water","$0.70",1000,"food"
-9,"Water","$0.70",1000,"grocery"
-10,"Water","$0.70",1000,"food"
-11,"Water","$0.70",1000,"grocery"
-12,"Water","$0.70",1000,"food"
-13,"give me water","$1.00",100,"grocery"
-3,"Water 2","$2.00",10002,"food"
-1,"Water 1","$1.00",10001,"grocery"
-```
-
-### `/api/inventory/items`:
-
-- method: POST
 - description: Add new items to the inventory and returns the new items if successful
 - body type:
 ```
@@ -147,9 +126,26 @@ The application is designed to be very extendable. Currently, the only functiona
 }
 ```
 
-### `/api/inventory/delete-items`:
+### `GET /api/inventory/export-csv`:
 
-- method: POST
+- description: Returns all inventory items in a csv file
+- return type: `inventory.csv`
+- return example:
+```csv
+"id","name","cost_per_unit","stock","type"
+2,"Water","$0.70",1000,"food"
+8,"Water","$0.70",1000,"food"
+9,"Water","$0.70",1000,"grocery"
+10,"Water","$0.70",1000,"food"
+11,"Water","$0.70",1000,"grocery"
+12,"Water","$0.70",1000,"food"
+13,"give me water","$1.00",100,"grocery"
+3,"Water 2","$2.00",10002,"food"
+1,"Water 1","$1.00",10001,"grocery"
+```
+
+### `POST /api/inventory/delete-items`:
+
 - description: Delete items from the inventory and returns the ids of the deleted items if successful
 - body type:
 ```
@@ -169,9 +165,8 @@ number[]
 [1]
 ```
 
-### `/api/inventory/update-items`:
+### `POST /api/inventory/update-items`:
 
-- method: POST
 - description: Update items from the inventory and returns the updated attributes if successful
 - body type:
 ```
