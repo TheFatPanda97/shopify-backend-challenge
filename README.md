@@ -41,8 +41,9 @@ src/
 1. clone the repo
 2. in your psql terminal, create a new database called `webdb`
 3. run the command `sh setup.sh` to create the tables and seed the database. Note: if you are on a windows machine, you will need some extra steps such as setting up [WSL](https://docs.microsoft.com/en-us/windows/wsl/install) to run the bash script.
-4. run the command `npm run dev` to start the server
-5. open the link `localhost:3000` to see the application
+4. create a `.env` file following the format in `.env.example` 
+5. run the command `npm run dev` to start the server
+6. open the link `localhost:3000` to see the application
 
 # Future Consideration
 
