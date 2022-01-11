@@ -12,6 +12,12 @@
 </head>
 
 <body>
+  <div id="loading-container" class="loading-container">
+    <h1>
+      Loading ...
+    </h1>
+  </div>
+
   <nav id="default-navbar" class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Shopify Backend Challenge</a>
@@ -93,6 +99,7 @@
 
   <script>
     document.getElementById("action-navbar").style.display = "none";
+    document.getElementById("loading-container").style.display = "none";
 
     let allItems = {};
     let selectedItems = {};
@@ -196,6 +203,9 @@
         const costInput = document.getElementById("cost-input");
         const stockInput = document.getElementById("stock-input");
         const typeInput = document.getElementById("type-input");
+        const loadingContainer = document.getElementById("loading-container");
+
+        loadingContainer.style.display = "flex";
 
         const responseRaw = await fetch(
           "/api/inventory/items",
@@ -214,6 +224,8 @@
         );
 
         const response = await responseRaw.json();
+
+        loadingContainer.style.display = "none";
 
         if (responseRaw.ok) {
           Object.entries(response).forEach(([id, item]) => {
