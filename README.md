@@ -2,6 +2,9 @@
 
 This repo contains the source code for the Shopify Summer 2022 [Backend Developer Intern Challenge](https://docs.google.com/document/d/1z9LZ_kZBUbg-O2MhZVVSqTmvDko5IJWHtuFmIu_Xg1A/edit). I hope you enjoy reading through it 😄
 
+# Deployed Version
+https://shopify-demo-inventory.herokuapp.com/
+
 # Project Description
 
 This project is a simple CRUD application that allows you to create, read, update, and delete inventory items. The application is built with Express.js and hosted on Heroku with PostgreSQL as the database.
