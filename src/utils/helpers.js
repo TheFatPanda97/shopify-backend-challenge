@@ -7,6 +7,10 @@ import _ from 'underscore';
  * Note: 0 is positive in this case.
  */
 export const isPositiveFloat = (rawNum) => {
+  if (rawNum === '') {
+    return false;
+  }
+
   const num = Number(rawNum);
 
   if (_.isNumber(num) && num >= 0) {
@@ -23,6 +27,10 @@ export const isPositiveFloat = (rawNum) => {
  * Note: 0 is positive in this case.
  */
 export const isPositiveInteger = (rawNum) => {
+  if (rawNum === '') {
+    return false;
+  }
+
   const num = Number(rawNum);
 
   if (Number.isInteger(num) && num >= 0) {
